@@ -1,0 +1,392 @@
+================================================================================
+HAPPYPAUSE - TECHNICAL OPTIONS REFERENCE (v4)
+================================================================================
+This document organizes all technical decisions for the HappyPause app.
+For each area: what we chose, what alternatives exist, and plain-language notes
+for non-developers. Use alongside promptv3txt.txt (app spec) and promptv4txt.txt.
+
+This template supports both MOBILE and WEB apps. The main stack choice affects
+both platforms.
+
+================================================================================
+PROJECT STRUCTURE (conventional)
+================================================================================
+
+Happypausev3/
+├── backend/                 # Node.js + Express API
+│   ├── src/
+│   │   ├── index.ts
+│   │   ├── routes/
+│   │   ├── db/
+│   │   └── middleware/
+│   ├── public/
+│   │   ├── uploads/         # User-uploaded images (Create HappyPause)
+│   │   └── images/
+│   │       └── activityimages/   # Activity illustrations
+│   ├── package.json
+│   └── .env.example
+│
+├── mobile/                  # Expo React Native app
+│   ├── app/
+│   ├── assets/
+│   │   └── sounds/          # Ringtone MP3 files
+│   ├── app.json
+│   └── package.json
+│
+└── docs/
+    ├── promptv3txt.txt      # App spec (unchanged)
+    ├── promptv4txt.txt      # Build prompt
+    ├── promptv4-technical-options.txt
+    ├── frontendlayout/      # HTML layout references
+    ├── ringtones/           # Chimes.mp3, Piano.mp3, Spacey.mp3 (→ mobile/assets/sounds/)
+    ├── activityimages/     # 60 PNGs (→ backend/public/images/activityimages/)
+    └── HappyPause-Activities-V3.csv
+
+
+================================================================================
+1. MAIN FRONTEND STACK (MOBILE + WEB)
+================================================================================
+
+CHOSEN OPTIONS:
+- Mobile: React Native (iOS + Android)
+- Web: React (same language/family as mobile)
+- Approach: Shared logic, separate codebases (or React Native Web for same codebase)
+
+OTHER OPTIONS (not chosen):
+
+MOBILE:
+- Flutter (Dart) – Single codebase for iOS + Android, different language
+- Kotlin Multiplatform – Native performance, shares logic across platforms
+- Swift/SwiftUI (iOS only) + Kotlin (Android only) – Native, separate codebases
+
+WEB:
+- Vue.js – Gentler learning curve, good ecosystem
+- Svelte/SvelteKit – Less boilerplate, fast
+- Angular – Enterprise-focused, more structure
+- Solid.js – React-like, fine-grained reactivity
+
+UNIFIED (same codebase for mobile + web):
+- React Native Web – React Native runs in browser; one codebase for all
+- Flutter Web – Flutter compiles to web; one codebase for mobile + web
+- Tauri + web – Desktop + web; mobile needs separate solution
+
+NOTES FOR NON-DEVS:
+- "Main stack" = the technology used to build the user interface (what users see
+  and tap/click). Different stacks have different tradeoffs.
+- React / React Native = JavaScript/TypeScript. React for web, React Native for
+  mobile. Same language, similar patterns. Large ecosystem, many developers.
+- Flutter = Google's framework. Uses Dart. One codebase for iOS, Android, and web.
+  Fast, polished UI. Different language from typical web.
+- "Unified" = one codebase for mobile and web. Fewer codebases to maintain, but
+  web experience may feel less "web-native."
+- "Separate codebases" = different projects for mobile and web. More work, but
+  each platform can be optimized. Shared backend (API) handles data.
+
+DECISION FACTORS:
+- Need same codebase? → React Native Web or Flutter
+- Prefer JavaScript/TypeScript? → React / React Native
+- Want maximum performance/native feel? → Flutter or native (Swift/Kotlin)
+- Web-first, mobile later? → React, Vue, or Svelte for web; add React Native
+  or Flutter when you build mobile
+
+STACK PAIRINGS (mobile ↔ web):
+- React Native + React → Same language, shared components possible via React Native Web
+- Flutter + Flutter Web → One codebase, Dart for both
+- React Native + Next.js/Remix → React ecosystem, separate projects
+- Vue + Capacitor/Ionic → Web framework + native wrapper for mobile
+
+
+================================================================================
+2. BACKEND / API STACK
+================================================================================
+
+CHOSEN OPTIONS:
+- Server stack: Node.js + Express
+- Database: PostgreSQL (for both development and production)
+- API: REST API with CRUD operations
+- Endpoint list: Use REST conventions (infer from spec)
+- API base URL:
+  - Dev: localhost
+  - Prod: No prod URL yet, or placeholder (e.g. happypausetime.mobileappslabs.ca)
+- Env vars: DATABASE_URL, JWT_SECRET, PORT (and Google/Apple client IDs when configured)
+
+OTHER OPTIONS (not chosen):
+- Server: Python (FastAPI/Django), Go (Gin/Fiber), .NET (ASP.NET Core)
+- Database: MySQL, SQLite (simpler but less scalable)
+
+NOTES FOR NON-DEVS:
+- "Backend" = the server that stores your data and handles login, activities, etc.
+- Node.js = JavaScript on the server; common choice for React Native projects
+  because it uses the same language.
+- PostgreSQL = the database that stores users, activities, categories, events.
+- REST API = a standard way for the app to talk to the server (get data, save data).
+- REST conventions = standard endpoint patterns (e.g. GET /activities, POST /auth/login).
+
+
+================================================================================
+3. DATABASE SCHEMA
+================================================================================
+
+CHOSEN OPTIONS:
+- Schema: See promptv4txt.txt "ACTIVITY DATABASE & POSTGRESQL SCHEMA" section.
+  Core tables: users, categories, activities, user_activity_shown, events.
+
+OTHER OPTIONS (not chosen):
+- Provide full SQL schema upfront
+- Use an ORM (Prisma, TypeORM) that generates schema from code
+- use entity and junction tables when necesarry
+
+NOTES FOR NON-DEVS:
+- "Schema" = the structure of your database tables (what columns each table has).
+- The app needs tables for: users, activities, categories, events (like focus_started,
+  happypause_done), and settings. The spec describes these; we can define them
+  explicitly once we start building.
+
+
+================================================================================
+4. REACT NATIVE STACK (mobile-specific)
+================================================================================
+
+CHOSEN OPTIONS:
+- Framework: Expo
+- Navigation: React Navigation (tabs, stacks, modals)
+- State management: React Context + useState/useReducer
+- Local storage: AsyncStorage
+- RN version: Latest stable build
+
+OTHER OPTIONS (not chosen):
+- Framework: Bare React Native (no Expo)
+- Navigation: Expo Router (file-based), React Native Navigation (Wix)
+- State management: Zustand, Redux Toolkit, Jotai, MobX
+- Local storage: MMKV (faster), SQLite, WatermelonDB
+- RN version: 0.74 LTS (older, more stable)
+
+NOTES FOR NON-DEVS:
+- Expo = a toolchain that simplifies React Native development and builds.
+- "Navigation" = how users move between screens (Timer, Stats, History, Profile).
+- "State management" = where app data lives in memory (e.g. timer state, user info).
+  Context + useState/useReducer = built-in React tools, no extra library.
+- AsyncStorage = simple key-value storage for settings, tokens, etc.
+
+
+================================================================================
+5. OAUTH / SOCIAL LOGIN
+================================================================================
+
+CHOSEN OPTIONS:
+- Google: @react-native-google-signin/google-signin
+- Apple: @invertase/react-native-apple-authentication (or expo-apple-authentication)
+- Both Google and Apple sign-in enabled
+- Token flow: App sends ID token to backend → backend verifies → returns our JWT
+- Token storage: SecureStore (Expo)
+
+OTHER OPTIONS (not chosen):
+- Google only or Apple only
+- Firebase Auth (simpler but ties you to Firebase)
+- Token storage: AsyncStorage (simpler but not encrypted)
+
+NOTES FOR NON-DEVS:
+- "OAuth" = "Sign in with Google" or "Sign in with Apple" instead of
+  email/password.
+- Both Google and Apple sign-in are implemented.
+- You need: Google Cloud Console (client IDs), Apple Developer account (for Apple).
+- "JWT" = a secure token that proves the user is logged in. The app stores it
+  and sends it with every request.
+- SecureStore = encrypted storage for tokens (Expo built-in).
+
+
+================================================================================
+6. MEDIA / ASSETS
+================================================================================
+
+NOTE: Ringtones in docs/ringtones/ (Chimes.mp3, Piano.mp3, Spacey.mp3). Activity
+images in docs/activityimages/. Transfer to mobile/assets/sounds/ and
+backend/public/images/activityimages/ during setup.
+
+CHOSEN OPTIONS:
+
+RINGTONE:
+- Format: MP3
+- Source: Transfer from docs/ringtones/ to mobile/assets/sounds/
+- Library: expo-av
+- Plays when focus timer reaches 0
+
+OTHER OPTIONS (not chosen):
+- Format: WAV, M4A, OGG, MP4
+- Source: System sounds, remote URL, user-selected from device
+- Library: react-native-sound
+
+NOTES FOR NON-DEVS:
+- The ringtone plays when the focus session ends. MP3 is widely supported.
+- "Bundled" = the sound file is inside the app, so it works offline.
+
+
+IMAGE UPLOAD (Create HappyPause):
+- Storage: Server public folder
+- Backend saves to uploads/, serves at /uploads/{id}.{ext}
+
+OTHER OPTIONS (not chosen):
+- Cloudinary, AWS S3, Firebase Storage (for scaling, CDN, etc.)
+
+NOTES FOR NON-DEVS:
+- When users create a HappyPause and add an image, the backend saves it to
+  uploads/ and serves it at /uploads/{id}.{ext} (e.g. /uploads/1000100000001.png).
+- Simple for small/medium apps. Cloud storage (S3, Cloudinary) is for when you
+  have many users or need CDN.
+
+
+ACTIVITY IMAGES (illustrations for each activity):
+- Location: public/images/activityimages/ (on server)
+- Served at: /images/activityimages/{id}.png
+- Filenames: {13-digit-id}.png (e.g. 1000300000002.png)
+- Aspect ratio: 3:1
+- Layout references: docs/frontendlayout/*.html for screen designs
+
+OTHER OPTIONS (not chosen):
+- Bundle images in app (increases app size)
+- Cloud storage (CDN)
+
+NOTES FOR NON-DEVS:
+- "Activity images" = the illustrations shown during a HappyPause (e.g. wall
+  push-up diagram). They live on the server and are loaded by the app.
+- The 13-digit ID follows the naming logic (batch, category, sequence).
+- HTML files in frontendlayout are the screen mockups for the app design.
+
+
+================================================================================
+7. DATA SYNC
+================================================================================
+
+CHOSEN OPTIONS:
+- Sync logic: Server-first throughout. PostgreSQL is the source of truth.
+  User-created activities and events: queue when offline, push to server
+  when online.
+- Conflict resolution: Server-wins for server activities; last-write-wins for
+  user-created.
+- Sync timing: On app start + when returning to foreground.
+
+OTHER OPTIONS (not chosen):
+- Sync logic: Server-only (no offline), always-online required
+- Conflict resolution: Client-wins, merge, prompt user
+- Sync timing: Periodic (e.g. every 15 min), real-time (WebSocket)
+
+NOTES FOR NON-DEVS:
+- "Sync" = keeping data on the device and server in agreement.
+- "Server-first" = PostgreSQL is the source of truth; app fetches and caches.
+- Offline support = app queues writes locally when offline, pushes to server
+  when back online.
+- "Conflict" = when the same activity was edited both offline and on the server.
+  - Server-wins = server data overwrites local.
+  - Last-write-wins = newest change wins.
+- "Append-only" = events (focus_started, thumb_up, etc.) are never edited; we
+  just add new ones, so no conflicts.
+
+
+================================================================================
+8. SECURITY
+================================================================================
+
+CHOSEN OPTIONS:
+- Password hashing: bcrypt (cost factor 10–12)
+- JWT expiry: 7 days
+- Refresh tokens: No refresh (user re-logs when JWT expires)
+- Token storage: SecureStore (Expo)
+
+OTHER OPTIONS (not chosen):
+- Password hashing: argon2, scrypt, PBKDF2
+- JWT expiry: 1 hour, 24 hours, 30 days
+- Refresh tokens: Yes (for fewer logins)
+- Token storage: AsyncStorage (not encrypted), react-native-keychain
+
+NOTES FOR NON-DEVS:
+- "Password hashing" = passwords are never stored as plain text. We store a
+  one-way hash so even we can't recover the original password.
+- bcrypt = industry standard for password hashing.
+- "JWT expiry" = how long the login token is valid before the user must log in
+  again. 7 days = good balance for mobile.
+- "Refresh token" = a long-lived token that lets the app get a new JWT without
+  asking the user to log in again.
+- Secure storage = tokens are stored encrypted on the device.
+
+
+================================================================================
+9. BUILD / DEPLOYMENT
+================================================================================
+
+CHOSEN OPTIONS:
+- Bundle ID (iOS): com.ajis.happypause
+- Package (Android): com.ajis.happypause
+- App display name: HappyPause
+- Version: 1.0.0
+- Build: EAS Build (Expo)
+- Privacy policy: https://www.ajis.ca/legal
+- Support: info@ajis.ca
+
+OTHER OPTIONS (not chosen):
+- React Native CLI (bare)
+- Different bundle IDs
+- Codemagic, Bitrise for CI/CD
+
+NOTES FOR NON-DEVS:
+- "Bundle ID" / "Package" = unique identifier for the app (like a domain name).
+  Must match across builds and store listings.
+- "Version" = user-facing version (e.g. 1.0.0). "Build number" = internal
+  number that increments each store submission.
+- EAS Build = Expo's cloud build service; can build iOS without a Mac.
+- App Store / Play Store metadata (description, screenshots, etc.) is filled in
+  when submitting to the stores.
+
+
+================================================================================
+10. ITEMS FROM ORIGINAL PROMPT (NO CHANGE)
+================================================================================
+
+Key items as specified in promptv4txt.txt:
+
+- Platform: React Native, iOS + Android (phones & tablets)
+- App concept: Focus cycles + HappyPause activities
+- Default timing: Focus 55 min, HappyPause 5 min
+- Login/signup: Email, Google, Apple
+- User fields: ID, email, username, password_hash (+ OAuth, profile; see schema)
+- Global structure: Header (logo, settings), 4 tabs (Timer, Stats, History, Profile)
+- Visual theme: Colors (#36333a, #b1b7a2, etc.), Poppins font
+- Timer flow: Focus → HappyPause → Focus (loop)
+- Thumbs system: Score -10 to +10; higher value = more likely, lower = less likely; weighted selection, anti-repetition
+- Categories: FITNESS, LEISURE, SOCIAL, MIND, SPIRITUAL, RELAXATION
+- Activity fields: ID (BIGINT), category_id, TITLE, DESCRIPTION, URL, thumbs_pref (-10 to +10), CREATOR_USER_ID
+- Naming logic: 13-digit ID (batch, custom, category, sequence)
+- Event types: focus_started, happypause_done, etc.
+- Create HappyPause form: Category, name, description, image, URL
+- Stats: Total focus/pause time, weekly chart, category breakdown
+- History: Chronological event log
+- Profile: Name, email, language (EN/FR), time zone, notifications
+- Settings: Ringtone, categories, focus time, pause time
+
+NOTES FOR NON-DEVS:
+- The build prompt (promptv4txt.txt) defines the app behavior and features. This
+  technical options document covers the "how" (servers, databases, libraries).
+
+
+================================================================================
+11. QUICK REFERENCE: WHAT TO ADD TO YOUR PROMPT
+================================================================================
+
+---
+TECHNICAL STACK (see promptv4-technical-options.txt for details):
+- Main stack: React/React Native (mobile + web). Alternatives: Flutter, Vue, etc.
+- Backend: Node + Express, PostgreSQL
+- API URL: Dev localhost; Prod placeholder (e.g. happypausetime.mobileappslabs.ca)
+- Endpoints: REST conventions
+- Schema: See promptv4txt.txt ACTIVITY DATABASE & POSTGRESQL SCHEMA
+- App: Expo, React Navigation, Context + useState/useReducer, AsyncStorage
+- Auth: JWT, bcrypt, SecureStore. Google + Apple sign-in
+- Ringtone: MP3
+- Images: uploads/ at /uploads/{id}.{ext}; activityimages at /images/activityimages/{id}.png
+- Sync: Server-first throughout; queue writes when offline, push when online
+- Security: bcrypt, JWT 7 days, no refresh, SecureStore
+- Build: EAS Build, com.ajis.happypause, HappyPause 1.0.0
+---
+
+================================================================================
+END OF DOCUMENT
+================================================================================

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HappyPause Statistics Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#abec13",
+                        "background-light": "#f5f5f5",
+                        "background-dark": "#36333a",
+                        "accent-muted": "#b1b7a2",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100dvh;
+            @apply bg-background-dark text-[#f5f5f5];
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-[#f5f5f5] min-h-screen">
+<div class="relative flex flex-col w-full max-w-md mx-auto min-h-screen shadow-2xl overflow-x-hidden pb-24">
+<header class="sticky top-0 bg-background-dark/95 backdrop-blur-md z-20 px-6 pt-6 pb-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="size-9 bg-white flex flex-col items-center justify-center text-black rounded-sm leading-[1]">
+<span class="text-[7px] font-bold uppercase">Logo.png</span>
+<span class="text-[6px] opacity-70">96x96px</span>
+</div>
+<span class="text-xl font-extrabold tracking-tight text-[#f5f5f5]">HappyPause</span>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[#f5f5f5]">settings</span>
+</button>
+</div>
+</header>
+<div class="px-6 pt-4 pb-2 flex justify-center">
+<h1 class="text-3xl font-extrabold tracking-tight text-[#f5f5f5]">Statistics</h1>
+</div>
+<section class="px-6 py-4 grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-2 rounded-2xl p-5 bg-white/5 border border-white/10">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-accent-muted text-sm">timer</span>
+<p class="text-accent-muted text-xs font-bold uppercase tracking-wider">Focus Time</p>
+</div>
+<p class="text-white text-2xl font-extrabold leading-tight">24h 15m</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-primary text-xs">trending_up</span>
+<p class="text-primary text-[10px] font-bold">+12% vs last week</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-2xl p-5 bg-primary/10 border border-primary/20">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm">spa</span>
+<p class="text-primary text-xs font-bold uppercase tracking-wider">HappyPause</p>
+</div>
+<p class="text-white text-2xl font-extrabold leading-tight">6h 40m</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-primary text-xs">trending_up</span>
+<p class="text-primary text-[10px] font-bold">+5% vs last week</p>
+</div>
+</div>
+</section>
+<section class="px-6 py-6">
+<div class="flex items-end justify-between mb-6">
+<h3 class="text-lg font-bold text-[#f5f5f5]">Weekly Activity</h3>
+<div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-accent-muted">
+<div class="flex items-center gap-1.5">
+<div class="size-2 rounded-full bg-accent-muted"></div>
+<span>Focus</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="size-2 rounded-full bg-primary"></div>
+<span>Pause</span>
+</div>
+</div>
+</div>
+<div class="relative h-40 w-full flex items-end justify-between px-2">
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+<div class="w-full h-px bg-white"></div>
+<div class="w-full h-px bg-white"></div>
+<div class="w-full h-px bg-white"></div>
+<div class="w-full h-px bg-white"></div>
+</div>
+<div class="flex flex-col items-center gap-2 h-full justify-end group">
+<div class="flex gap-1 items-end h-[60%]">
+<div class="w-2.5 h-[80%] bg-accent-muted rounded-t-full"></div>
+<div class="w-2.5 h-[30%] bg-primary rounded-t-full"></div>
+</div>
+<span class="text-[10px] font-bold text-accent-muted">M</span>
+</div>
+<div class="flex flex-col items-center gap-2 h-full justify-end group">
+<div class="flex gap-1 items-end h-[60%]">
+<div class="w-2.5 h-[90%] bg-accent-muted rounded-t-full"></div>
+<div class="w-2.5 h-[40%] bg-primary rounded-t-full"></div>
+</div>
+<span class="text-[10px] font-bold text-accent-muted">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 h-full justify-end group">
+<div class="flex gap-1 items-end h-[60%]">
+<div class="w-2.5 h-[70%] bg-accent-muted rounded-t-full"></div>
+<div class="w-2.5 h-[60%] bg-primary rounded-t-full"></div>
+</div>
+<span class="text-[10px] font-bold text-accent-muted">W</span>
+</div>
+<div class="flex flex-col items-center gap-2 h-full justify-end group">
+<div class="flex gap-1 items-end h-[60%]">
+<div class="w-2.5 h-[100%] bg-accent-muted rounded-t-full"></div>
+<div class="w-2.5 h-[20%] bg-primary rounded-t-full"></div>
+</div>
+<span class="text-[10px] font-bold text-accent-muted">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 h-full justify-end group">
+<div class="flex gap-1 items-end h-[60%]">
+<div class="w-2.5 h-[85%] bg-accent-muted rounded-t-full"></div>
+<div class="w-2.5 h-[50%] bg-primary rounded-t-full"></div>
+</div>
+<span class="text-[10px] font-bold text-accent-muted">F</span>
+</div>
+<div class="flex flex-col items-center gap-2 h-full justify-end group">
+<div class="flex gap-1 items-end h-[60%]">
+<div class="w-2.5 h-[40%] bg-accent-muted rounded-t-full"></div>
+<div class="w-2.5 h-[90%] bg-primary rounded-t-full"></div>
+</div>
+<span class="text-[10px] font-bold text-accent-muted">S</span>
+</div>
+<div class="flex flex-col items-center gap-2 h-full justify-end group">
+<div class="flex gap-1 items-end h-[60%]">
+<div class="w-2.5 h-[30%] bg-accent-muted rounded-t-full"></div>
+<div class="w-2.5 h-[95%] bg-primary rounded-t-full"></div>
+</div>
+<span class="text-[10px] font-bold text-accent-muted">S</span>
+</div>
+</div>
+</section>
+<section class="px-6 py-6 mt-2">
+<h3 class="text-lg font-bold text-[#f5f5f5] mb-6">Category Breakdown</h3>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-medium">
+<span class="text-[#f5f5f5]">Fitness</span>
+<span class="text-accent-muted">4h 20m</span>
+</div>
+<div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 85%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-medium">
+<span class="text-[#f5f5f5]">Leisure</span>
+<span class="text-accent-muted">2h 15m</span>
+</div>
+<div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-muted rounded-full" style="width: 45%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-medium">
+<span class="text-[#f5f5f5]">Social</span>
+<span class="text-accent-muted">1h 50m</span>
+</div>
+<div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary/60 rounded-full" style="width: 38%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-medium">
+<span class="text-[#f5f5f5]">Mind</span>
+<span class="text-accent-muted">1h 10m</span>
+</div>
+<div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-muted/80 rounded-full" style="width: 25%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-medium">
+<span class="text-[#f5f5f5]">Spiritual</span>
+<span class="text-accent-muted">45m</span>
+</div>
+<div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 rounded-full" style="width: 15%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-sm font-medium">
+<span class="text-[#f5f5f5]">Relaxation</span>
+<span class="text-accent-muted">30m</span>
+</div>
+<div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-accent-muted/40 rounded-full" style="width: 10%;"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="px-6 py-6 pb-12">
+<h3 class="text-lg font-bold text-[#f5f5f5] mb-6">Activity Insights</h3>
+<div class="grid grid-cols-1 gap-3">
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-xl bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">fitness_center</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#f5f5f5]">Fitness</p>
+<p class="text-xs text-accent-muted">Workouts completed</p>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">Done</p>
+<p class="text-lg font-extrabold text-[#f5f5f5]">12</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-xl bg-accent-muted/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-accent-muted">movie</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#f5f5f5]">Leisure</p>
+<p class="text-xs text-accent-muted">Personal time</p>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">Done</p>
+<p class="text-lg font-extrabold text-[#f5f5f5]">8</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-xl bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">group</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#f5f5f5]">Social</p>
+<p class="text-xs text-accent-muted">Connections made</p>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">Done</p>
+<p class="text-lg font-extrabold text-[#f5f5f5]">15</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-xl bg-accent-muted/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-accent-muted">self_improvement</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#f5f5f5]">Mind</p>
+<p class="text-xs text-accent-muted">Meditation sessions</p>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">Done</p>
+<p class="text-lg font-extrabold text-[#f5f5f5]">18</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-xl bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#f5f5f5]">Spiritual</p>
+<p class="text-xs text-accent-muted">Reflection time</p>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">Done</p>
+<p class="text-lg font-extrabold text-[#f5f5f5]">5</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-xl bg-accent-muted/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-accent-muted">bedtime</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#f5f5f5]">Relaxation</p>
+<p class="text-xs text-accent-muted">Deep rest</p>
+</div>
+</div>
+<div class="text-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">Done</p>
+<p class="text-lg font-extrabold text-[#f5f5f5]">4</p>
+</div>
+</div>
+</div>
+</section>
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background-dark/90 backdrop-blur-xl border-t border-white/10 px-6 py-4 z-50">
+<div class="flex items-center justify-between">
+<button class="flex flex-col items-center gap-1 text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">timer</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Timer</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-accent-muted">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1">bar_chart</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Stats</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">history</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">History</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-white/40 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Profile</span>
+</button>
+</div>
+</nav>
+</div>
+
+</body></html>
