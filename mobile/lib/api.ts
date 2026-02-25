@@ -1,3 +1,5 @@
+import { triggerUnauthorized } from './authSync';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
 let token: string | null = null;
@@ -18,6 +20,7 @@ async function request(method: string, path: string, body?: unknown) {
 
   if (res.status === 401) {
     token = null;
+    triggerUnauthorized();
     throw new Error('Session expired');
   }
 

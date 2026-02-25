@@ -68,8 +68,16 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
 router.post('/:id/upload', requireAuth, (req, res, next) => {
   (req as Request & { activityId?: string }).activityId = req.params.id;
   upload.single('image')(req, res, async (err) => {
-    if (err) return res.status(400).json({ error: err.message });
-    const ext = req.file ? path.extname(req.file.originalname) : '.png';
+    if (err) {
+      console.error('[upload] multer error:', err.message);
+      return res.status(400).json({ error: err.message });
+    }
+    if (!req.file) {
+      console.error('[upload] no file in request');
+      return res.status(400).json({ error: 'No image file received' });
+    }
+    const ext = path.extname(req.file.originalname) || '.png';
+    console.log(`[upload] saved ${req.params.id}${ext} to ${uploadsDir}`);
     await pool.query('UPDATE activities SET image_ext = $1 WHERE id = $2', [ext, req.params.id]);
     res.json({ ok: true, imageUrl: `/uploads/${req.params.id}${ext}` });
   });

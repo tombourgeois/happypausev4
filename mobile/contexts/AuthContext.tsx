@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { secureStorage } from '../lib/secureStorage';
 import { api } from '../lib/api';
+import { setOnUnauthorized } from '../lib/authSync';
 import { flushEventQueue } from '../lib/events';
 
 type User = { id: number; email: string; username: string };
@@ -23,6 +24,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const clearAuth = async () => {
+      await secureStorage.deleteItemAsync('token');
+      api.setToken(null);
+      setToken(null);
+      setUser(null);
+    };
+    setOnUnauthorized(clearAuth);
+    return () => setOnUnauthorized(null);
+  }, []);
 
   useEffect(() => {
     (async () => {

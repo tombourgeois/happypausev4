@@ -26,7 +26,7 @@ function formatTime(sec: number) {
 }
 
 export default function HappyPauseScreen() {
-  const { remainingSeconds, isRunning, pauseMinutes, togglePause, stop, restart } = useTimer();
+  const { remainingSeconds, isRunning, pauseMinutes, togglePause, stop, restart, startFocus } = useTimer();
   const { user } = useAuth();
   const [activity, setActivity] = useState<Activity | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -79,6 +79,7 @@ export default function HappyPauseScreen() {
         await api.post('/events', { event_type: 'happypause_done', activity_id: activity.id, category: activity.category_name });
       } catch {}
     }
+    startFocus();
     router.back();
   };
   const handleSkip = async () => {
@@ -87,6 +88,7 @@ export default function HappyPauseScreen() {
         await api.post('/events', { event_type: 'happypause_skipped', activity_id: activity.id, category: activity.category_name });
       } catch {}
     }
+    startFocus();
     router.back();
   };
 
@@ -117,7 +119,7 @@ export default function HappyPauseScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => { startFocus(); router.back(); }}>
           <Text style={styles.closeBtn}>✕</Text>
         </TouchableOpacity>
         <Text style={styles.title}>HAPPYPAUSE IN PROGRESS</Text>

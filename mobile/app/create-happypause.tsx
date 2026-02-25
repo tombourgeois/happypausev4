@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
-import { router } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Image, Platform } from 'react-native';
+import { router, Redirect } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
@@ -16,7 +16,7 @@ const COLORS = {
 type Category = { id: number; category_name: string };
 
 export default function CreateHappyPauseScreen() {
-  const { user } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryId, setCategoryId] = useState<number | ''>('');
   const [title, setTitle] = useState('');
@@ -40,6 +40,10 @@ export default function CreateHappyPauseScreen() {
         setCategoryId(1);
       });
   }, []);
+
+  if (!isLoading && !isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
   const pickImage = async () => {
     const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [3, 1] });
@@ -66,15 +70,31 @@ export default function CreateHappyPauseScreen() {
       const activity = res.data;
       if (imageUri && activity?.id) {
         const formData = new FormData();
-        formData.append('image', { uri: imageUri, name: `${activity.id}.png`, type: 'image/png' } as any);
+        if (Platform.OS === 'web') {
+          const res = await fetch(imageUri);
+          const blob = await res.blob();
+          const ext = blob.type === 'image/jpeg' ? '.jpg' : '.png';
+          const file = new File([blob], `${activity.id}${ext}`, { type: blob.type || 'image/png' });
+          formData.append('image', file);
+        } else {
+          formData.append('image', { uri: imageUri, name: `${activity.id}.png`, type: 'image/png' } as any);
+        }
         const t = api.getToken();
         try {
-          await fetch(`${api.getBaseUrl()}/activities/${activity.id}/upload`, {
+          const uploadRes = await fetch(`${api.getBaseUrl()}/activities/${activity.id}/upload`, {
             method: 'POST',
             headers: t ? { Authorization: `Bearer ${t}` } : {},
             body: formData,
           });
-        } catch {}
+          if (!uploadRes.ok) {
+            const errData = await uploadRes.json().catch(() => ({}));
+            throw new Error(errData.error || `Image upload failed: ${uploadRes.status}`);
+          }
+        } catch (uploadErr) {
+          Alert.alert('Image upload failed', (uploadErr as Error).message);
+          setLoading(false);
+          return;
+        }
       }
       if (makePublic) {
       }
@@ -140,9 +160,18 @@ export default function CreateHappyPauseScreen() {
         />
 
         <Text style={styles.label}>Image</Text>
-        <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
-          <Text style={styles.uploadText}>{imageUri ? 'Image selected' : 'Pick image'}</Text>
-        </TouchableOpacity>
+        {imageUri ? (
+          <View style={styles.imagePreviewRow}>
+            <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+            <TouchableOpacity style={styles.changeImageBtn} onPress={pickImage}>
+              <Text style={styles.uploadText}>Change image</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.uploadBtn} onPress={pickImage}>
+            <Text style={styles.uploadText}>Pick image</Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity style={styles.checkRow} onPress={() => setMakePublic(p => !p)}>
           <Text style={styles.checkbox}>{makePublic ? '☑' : '☐'}</Text>
@@ -190,6 +219,9 @@ const styles = StyleSheet.create({
   catTextActive: { color: COLORS.bg },
   uploadBtn: { padding: 16, backgroundColor: COLORS.input, borderRadius: 12, marginBottom: 16 },
   uploadText: { color: COLORS.primary },
+  imagePreviewRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 },
+  imagePreview: { width: 80, height: 27, borderRadius: 8, backgroundColor: COLORS.input },
+  changeImageBtn: { padding: 12, backgroundColor: COLORS.input, borderRadius: 8 },
   checkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   checkbox: { fontSize: 18, marginRight: 12, color: COLORS.primary },
   checkLabel: { flex: 1, fontSize: 14, color: COLORS.text },
