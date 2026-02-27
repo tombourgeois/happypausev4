@@ -19,6 +19,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    image: ${DOCKERHUB_USERNAME:-mobileappslabs2}/happypausetime:latest
     ports:
       - "3000:3000"
     environment:

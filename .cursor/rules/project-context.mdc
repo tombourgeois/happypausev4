@@ -1,0 +1,11 @@
+---
+description: HappyPause project team and context
+alwaysApply: true
+---
+
+# HappyPause Project Context
+
+## Team
+
+- **Tommy** – Project developer (you). Builds the app, pushes code, tests locally.
+- **JF** – Handles deployment. Has the server, Docker Hub org (mobileappslabs), Git repo (MobileAppsLabs2/HappyPauseTime). Ask JF for: API URL, deployment issues, CORS/server config, Docker Hub access.

@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "HappyPause",
-    "slug": "happypause",
+    "slug": "happypausetime",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
-    "scheme": "happypause",
+    "scheme": "happypausetime",
     "plugins": ["expo-router", "expo-secure-store", "expo-font"],
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -29,6 +29,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "aabdac54-3812-4edd-b781-c5d1b1fe6b44"
+      }
     }
   }
 }

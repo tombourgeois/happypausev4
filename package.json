@@ -1,0 +1,8 @@
+{
+  "name": "happypause",
+  "private": true,
+  "scripts": {
+    "docker-build": "docker build -t mobileappslabs/happypausetime:latest -f backend/Dockerfile .",
+    "docker-push": "docker push mobileappslabs/happypausetime:latest"
+  }
+}

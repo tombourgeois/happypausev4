@@ -23,7 +23,13 @@ const PORT = process.env.PORT || 3000;
   }
 });
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+    : true,
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
 app.use('/images', express.static(path.join(__dirname, '..', 'public', 'images')));
