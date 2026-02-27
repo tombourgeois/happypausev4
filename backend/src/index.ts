@@ -3,7 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import activitiesRoutes from './routes/activities.js';
