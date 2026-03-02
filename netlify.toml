@@ -1,0 +1,12 @@
+# HappyPause Web – Netlify build config
+# Repo: https://github.com/tomb4289/happypausetimev1
+
+[build]
+  command = "cd mobile && npm install && npm run build-web"
+  publish = "mobile/dist"
+
+# REQUIRED: Set in Netlify UI (Site settings → Environment variables):
+#   EXPO_PUBLIC_API_URL = https://happypausetime.mobileappslabs.ca
+# (Baked in at build time; without this, the app will call localhost)
+
+# After deploy: add your Netlify URL to CORS_ORIGIN on the API server.
